@@ -1,0 +1,134 @@
+Private Sub CommandButton1_Click()
+Unload UserForm1
+End Sub
+
+Private Sub CommandButton2_Click()
+
+Dim Wiersz ' Zmienna wypełnienia właściwego wiersza
+Dim NaLiczbe As Double ' Aby kody towaru zapisało jako liczbę
+
+
+' Spr. czy wypełniono pole kodu
+If TextBox1.Text = "" Then
+        MsgBox ("Brak wewnętrznego kodu towaru.")
+        Exit Sub
+End If
+
+' Spr. czy wypełniono pole nazwy
+If TextBox3.Text = "" Then
+        MsgBox ("Brak nazwy towaru.")
+        Exit Sub
+End If
+
+' Spr. czy wypełniono pole kodu
+'If TextBox2.text = "" Then
+'        MsgBox, który zapyta czy kontynuować mimo braku kodu
+'
+'End If
+
+' Sprawdzenie duplikatu w bazie
+For dupl = 4 To Rows.Count
+    If Cells(dupl, 2).Value = TextBox1.Text Then
+        MsgBox ("Produkt o takim kodzie już jest wprowadzony.")
+        Exit Sub
+    End If
+Next dupl
+
+' Licznik_wierszy
+
+For IlePap = 4 To Rows.Count
+    If Cells(IlePap, 2) = 0 Then
+        Exit For
+    End If
+Next IlePap
+
+For IleTyt = IlePap + 3 To Rows.Count
+    If Cells(IleTyt, 2) = 0 Then
+        Exit For
+    End If
+Next IleTyt
+
+For IleGil = IleTyt + 3 To Rows.Count
+    If Cells(IleGil, 2) = 0 Then
+        Exit For
+    End If
+Next IleGil
+
+' Wybór kategorii
+
+If OptionButton2 = True Then
+    Wiersz = IleTyt
+ElseIf OptionButton3 = True Then
+    Wiersz = IleGil
+Else
+    Wiersz = IlePap
+End If
+
+
+
+' Usunięcie dolnej ramki wiersza wybranej kategorii
+
+Rows(Wiersz - 1).Select
+Selection.Borders(xlEdgeBottom).LineStyle = xlNone
+
+' Wstawianie wiersza
+
+Rows(Wiersz).Select
+Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
+NaLiczbe = TextBox1.Text
+Worksheets("Zamówienia").Cells(Wiersz, 2).Value = NaLiczbe 'TextBox1
+NaLiczbe = TextBox2.Text
+Worksheets("Zamówienia").Cells(Wiersz, 3).Value = NaLiczbe 'TextBox2
+Worksheets("Zamówienia").Cells(Wiersz, 4).Value = TextBox3.Text
+
+' Formatowanie dolnej linii tabeli
+Worksheets("Zamówienia").Range(Cells(Wiersz, 1), Cells(Wiersz, 5)).Select
+    With Selection.Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .ColorIndex = xlAutomatic
+        .TintAndShade = 0
+        .Weight = xlMedium
+    End With
+
+' Formatowanie prawej linii tabeli
+For Kolumna = 1 To 5
+Worksheets("Zamówienia").Cells(Wiersz, Kolumna).Select
+With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ColorIndex = xlAutomatic
+        .TintAndShade = 0
+        .Weight = xlMedium
+End With
+Next Kolumna
+    
+' Formatowanie lewej linii tabeli
+Worksheets("Zamówienia").Cells(Wiersz, 1).Select
+With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ColorIndex = xlAutomatic
+        .TintAndShade = 0
+        .Weight = xlMedium
+End With
+
+
+Unload UserForm1
+
+End Sub
+
+
+Private Sub TextBox1_Change()
+If IsNumeric(TextBox1.Value) = False Then
+    MsgBox ("Kod wewnętrzny towaru musi być liczbą.")
+
+End If
+End Sub
+
+Private Sub TextBox2_Change()
+If IsNumeric(TextBox2.Value) = False Then
+MsgBox ("Kod kreskowy towaru musi być liczbą.")
+End If
+End Sub
+
+Sub dziala()
+MsgBox ("Działa!")
+End Sub
